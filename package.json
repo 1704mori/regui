@@ -1,0 +1,42 @@
+{
+  "name": "regui",
+  "version": "0.0.1",
+  "private": false,
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/1704mori/regui.git"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "run-p type-check \"build-only {@}\" --",
+    "preview": "vite preview",
+    "test:unit": "vitest",
+    "build-only": "vite build",
+    "type-check": "vue-tsc --build --force"
+  },
+  "dependencies": {
+    "@vueuse/core": "^10.7.2",
+    "lucide-vue-next": "^0.317.0",
+    "vue": "^3.3.11",
+    "vue-router": "^4.2.5",
+    "vue-sonner": "^1.0.3"
+  },
+  "devDependencies": {
+    "@tsconfig/node18": "^18.2.2",
+    "@types/jsdom": "^21.1.6",
+    "@types/node": "^18.19.3",
+    "@vitejs/plugin-vue": "^4.5.2",
+    "@vue/test-utils": "^2.4.3",
+    "@vue/tsconfig": "^0.5.0",
+    "autoprefixer": "^10.4.17",
+    "jsdom": "^23.0.1",
+    "npm-run-all2": "^6.1.1",
+    "postcss": "^8.4.33",
+    "tailwindcss": "^3.4.1",
+    "typescript": "~5.3.0",
+    "vite": "^5.0.10",
+    "vitest": "^1.0.4",
+    "vue-tsc": "^1.8.25"
+  }
+}

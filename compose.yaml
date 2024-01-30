@@ -1,0 +1,22 @@
+version: "3"
+
+services:
+  rejisutori:
+    container_name: rejisutori_dev
+    image: rejisutori_dev
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+    volumes:
+      - ./:/srv/app
+    ports:
+      - 5173:5173
+    tty: true
+    networks:
+      ce_frontend:
+        ipv4_address: 192.168.255.240
+
+networks:
+  ce_frontend:
+    external: true
+
