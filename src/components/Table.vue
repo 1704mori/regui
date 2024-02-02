@@ -4,7 +4,7 @@
       class="space-y-2 md:space-y-0 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-lg divide-y divide-neutral-200 dark:divide-neutral-800 overflow-hidden max-h-80 overflow-y-scroll"
     >
       <div
-        v-if="!totalData || !data.length"
+        v-if="!total || !data.length"
         class="flex justify-between items-center px-4 py-2 bg-neutral-50 dark:bg-neutral-950"
       >
         <p class="text-sm font-medium">no results found</p>
@@ -14,10 +14,49 @@
         v-for="(item, index) in data as any"
         :key="index"
         :class="[
-          'bg-neutral-50 dark:bg-neutral-950 px-1 py-1.5 shadow-md flex flex-wrap [@media(min-width:840px)]:grid sm:gap-4',
+          'bg-neutral-50 dark:bg-neutral-950 dark:hover:bg-neutral-900 hover:cursor-pointer px-1 py-1.5 shadow-md flex flex-wrap [@media(min-width:840px)]:grid sm:gap-4',
           className,
         ]"
         :style="{ gridTemplateColumns: generateGridColumns.join(' ') }"
+        @click="() => {
+          if (!rowClick) return;
+          const newData = { ...item };
+
+          if (typeof Object.keys(newData).some((key) => typeof newData[key] === 'object')) {
+            const thatSomeKey = Object.keys(newData).filter((key) => typeof newData[key] === 'object')
+            // const value = newData[thatSomeKey!];
+            // if ('__v_isVNode' in value) {
+            //   // scan in value where 'data-valuehere' is
+            //   let dataValue = '';
+
+            //   // loop 'value'
+            //   for (let i = 0; i < value.children.length; i++) {
+            //     if (value.children[i].props?.['data-valuehere']) {
+            //       dataValue = value.children[i].props['data-valuehere'];
+            //     }
+            //   }
+
+            //   newData[thatSomeKey!] = dataValue;
+            // }
+
+            for (let i = 0; i < thatSomeKey.length; i++) {
+              const value = newData[thatSomeKey[i]];
+              if ('__v_isVNode' in value) {
+                let dataValue = '';
+
+                for (let i = 0; i < value.children.length; i++) {
+                  if (value.children[i].props?.['data-valuehere']) {
+                    dataValue = value.children[i].props['data-valuehere'];
+                  }
+                }
+
+                newData[thatSomeKey[i]] = dataValue;
+              }
+            }
+          }
+
+          rowClick(newData);
+        }"
       >
         <div
           v-for="(column, columnIndex) in columns as any"
@@ -41,6 +80,8 @@
             class="font-medium"
             v-html="item[column.key]"
           />
+          <component v-else :is="item[column.key]" />
+
           <div
             v-if="
               column.key === 'actions' && typeof item[column.key] != 'string'
@@ -77,7 +118,7 @@
 
 <script lang="ts">
 import { defineComponent, toRefs } from "vue";
-import Pagination from "@/components/Pagination.vue";
+import Pagination from "./Pagination.vue";
 
 export default defineComponent({
   name: "Table",
@@ -98,8 +139,9 @@ export default defineComponent({
       type: Number,
       default: 5,
     },
-    totalData: Number,
-    onPageClick: Function,
+    total: Number,
+    pageClick: Function,
+    rowClick: Function,
   },
   setup(props) {
     const { columns } = toRefs(props);
@@ -129,8 +171,8 @@ export default defineComponent({
   },
   methods: {
     pageChanged(page: number) {
-      if (this.onPageClick) {
-        this.onPageClick(page);
+      if (this.pageClick) {
+        this.pageClick(page);
       }
     },
   },
