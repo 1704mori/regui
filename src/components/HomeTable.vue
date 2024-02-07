@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { defineComponent, h, ref, watch, watchEffect, type VNode } from "vue";
 import { useQuery } from "@tanstack/vue-query";
-import { REGISTRY_API } from "@/lib/utils";
 import {
   Tooltip,
   TooltipContent,
@@ -29,7 +28,7 @@ const repositoriesFetcher = async (
   page: number,
 ): Promise<Repositories> =>
   await fetch(
-    `${REGISTRY_API}/_catalog?n=${PAGE_SIZE}&last=${page * PAGE_SIZE}`,
+    `/v2/_catalog?n=${PAGE_SIZE}&last=${page * PAGE_SIZE}`,
     {
       credentials: "include",
       headers: new Headers({
@@ -40,7 +39,7 @@ const repositoriesFetcher = async (
   ).then((response) => response.json());
 
 const tagsFetcher = async (repository: string): Promise<Tags> =>
-  await fetch(`${REGISTRY_API}/${repository}/tags/list`, {
+  await fetch(`/v2/${repository}/tags/list`, {
     credentials: "include",
     headers: new Headers({
       Authorization: "Basic " + btoa(`hs:1231aba1`),

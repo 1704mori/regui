@@ -1,17 +1,19 @@
 version: "3"
 
 services:
-  rejisutori:
-    container_name: rejisutori_dev
-    image: rejisutori_dev
+  regui:
+    container_name: regui
+    image: regui
     build:
       context: .
-      dockerfile: docker/Dockerfile.dev
-    volumes:
-      - ./:/srv/app
+      dockerfile: docker/Dockerfile
     ports:
-      - 5173:5173
-    tty: true
+      - 9002:9002
+    environment:
+      - LISTEN_PORT=9002
+      - REGISTRY_PORT=9001
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
     networks:
       ce_frontend:
         ipv4_address: 192.168.255.240
