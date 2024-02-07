@@ -22,7 +22,7 @@ type Tags = {
 }
 
 const PAGE_SIZE = 15;
-const repositoriesData = ref<null | { name: string | VNode; tags: string | VNode, actions?: any }[]>(null); // Initialize as null
+const repositoriesData = ref<null | { name: string | VNode; tags: string[] | VNode, actions?: any }[]>(null); // Initialize as null
 
 const repositoriesFetcher = async (
   page: number,
@@ -58,7 +58,7 @@ const { isLoading, isError, isFetching, data, error, refetch, suspense } =
       const repositories: { name: string; tags: string }[] = [];
       for (const name of data.repositories) {
         const tags = await tagsFetcher(name);
-        repositories.push({ name, tags: String(tags.tags.length) });
+        repositories.push({ name, tags: tags.tags });
       }
       repositoriesData.value = repositories;
       return repositories;
