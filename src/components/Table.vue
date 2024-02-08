@@ -75,13 +75,37 @@
             },
           ]"
         >
-          <p
+          <!-- <p
             v-if="typeof item[column.key] == 'string'"
             class="font-medium"
             v-html="item[column.key]"
           />
-          <component v-else :is="item[column.key]" />
+          <component v-else :is="item[column.key]" /> -->
 
+          <div
+            v-if="showColumnName"
+            :class="[
+              'flex flex-col justify-start items-stretch relative min-w-full',
+              item[column.key].rules,
+            ]"
+          >
+            <p class="text-sm font-semibold">{{ column.label }}</p>
+            <p
+              v-if="typeof item[column.key] == 'string'"
+              class="font-medium"
+              v-html="item[column.key]"
+            />
+            <component v-else :is="item[column.key]" />
+          </div>
+          <component v-else>
+            <p
+              v-if="typeof item[column.key] == 'string'"
+              class="font-medium"
+              v-html="item[column.key]"
+            />
+            <component v-else :is="item[column.key]" />
+          </component>
+          
           <div
             v-if="
               column.key === 'actions' && typeof item[column.key] != 'string'
@@ -139,6 +163,7 @@ export default defineComponent({
       type: Number,
       default: 5,
     },
+    showColumnName: Boolean,
     total: Number,
     pageClick: Function,
     rowClick: Function,
