@@ -22,7 +22,7 @@ http {
     proxy_ignore_headers "X-Accel-Buffering";
 
     location / {
-      try_files $uri /index.html;
+      try_files $uri $uri/ /index.html;
     }
 
     location /v2 {
@@ -39,7 +39,7 @@ http {
       #  auth_basic_user_file /etc/nginx/auth/read-only.htpasswd;
       #}
 
-       proxy_pass http://registry:$REGISTRY_PORT;
+     proxy_pass http://registry:$REGISTRY_PORT;
     }
   }
 }
