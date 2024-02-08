@@ -96,7 +96,7 @@ const fetchImage = async (repository: string, tag: string): Promise<ImageTag> =>
     digest: response.headers.get("Docker-Content-Digest")
   }));
 
-  
+
 const { isLoading, isError, isFetching, error, data, refetch, suspense } =
   useQuery({
     queryKey: ["image", route.params.image as string],
@@ -105,11 +105,11 @@ const { isLoading, isError, isFetching, error, data, refetch, suspense } =
       for (const tag of data.tags) {
         const image = await fetchImage(route.params.image as string, tag)
         let sumSize = 0
-        
+
         for (const { blobSum } of image.fsLayers) {
           sumSize += await fetchTagSize(blobSum);
         }
-        
+
         images.value.push({
           size: convertBytes(sumSize),
           digest: image.digest,
@@ -121,7 +121,7 @@ const { isLoading, isError, isFetching, error, data, refetch, suspense } =
       loading.value = false
     },
   });
-  
+
 const handleRowClick = (row: any) => {
   console.log(row)
 };
@@ -156,7 +156,9 @@ watchEffect(() => {
     <h2 class="text-lg font-medium">
       List of tags for <i>{{ route.params.image }}</i>
     </h2>
-    <div class="flex items-center gap-2 bg-neutral-200 dark:bg-neutral-950 border border-neutral-300 dark:border-neutral-900 p-1 rounded-md" v-if="loading">
+    <div
+      class="flex items-center gap-2 bg-neutral-200 dark:bg-neutral-950 border border-neutral-300 dark:border-neutral-900 p-1 rounded-md"
+      v-if="loading">
       <Loader2 class="animate-spin" />
       <span class="font-medim text-xs">
         Fetching images
