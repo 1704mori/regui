@@ -97,7 +97,7 @@ const fetchImage = async (repository: string, tag: string): Promise<ImageTag> =>
   }));
 
   
-  const { isLoading, isError, isFetching, error, data, refetch, suspense } =
+const { isLoading, isError, isFetching, error, data, refetch, suspense } =
   useQuery({
     queryKey: ["image", route.params.image as string],
     queryFn: (key) => tagsFetcher(route.params.image as string),
