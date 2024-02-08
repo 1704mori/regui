@@ -3,7 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import ImageView from '../views/ImageView.vue'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(),
   routes: [
     {
       path: '/',
@@ -13,7 +13,7 @@ const router = createRouter({
     {
       path: '/:image',
       component: ImageView
-    }
+    },
   ]
 })
 
