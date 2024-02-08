@@ -62,7 +62,7 @@ defineExpose({
   <dialog
     ref="dialog"
     :class="{
-      'w-96 bg-transparent [&[open]::backdrop]:bg-black/50 [&[open]::backdrop]:backdrop-blur-sm': true,
+      'w-96 bg-transparent [&[open]::backdrop]:bg-black/50 [&[open]::backdrop]:backdrop-blur-sm outline-none': true,
       [props.classes]: props.classes,
     }"
     @close="visible = false"
@@ -71,7 +71,7 @@ defineExpose({
       v-if="visible"
       method="dialog"
       :class="{
-        'modal-box rounded-xl border-2 border-slate-400/10 bg-neutral-100 p-4 dark:bg-neutral-900 text-white': true,
+        'modal-box rounded-xl border-2 border-slate-400/10 bg-neutral-100 p-4 dark:bg-neutral-900': true,
       }"
     >
       <slot />
@@ -87,9 +87,9 @@ defineExpose({
             <button
               v-if="props.showCancel"
               value="false"
-              class="mt-4 bg-red-400/10 hover:bg-red-400/20 text-white font-bold py-2 px-4 rounded"
+              class="mt-4 bg-red-400/10 hover:bg-red-400/20 font-bold py-2 px-4 rounded"
               :class="{
-                'mt-4 bg-red-400/10 hover:bg-red-400/20 text-white font-bold py-2 px-4 rounded': true,
+                'mt-4 bg-red-400/10 hover:bg-red-400/20 font-bold py-2 px-4 rounded': true,
                 '[grid-column:2]': props.hideConfirm || !props.showCancel,
               }"
               @click.prevent="cancel"
@@ -100,7 +100,7 @@ defineExpose({
               v-if="!props.hideConfirm"
               :disabled="props.loading"
               value="true"
-              class="mt-4 bg-green-400/10 hover:bg-green-400/20 text-white font-bold py-2 px-4 rounded disabled:cursor-not-allowed disabled:opacity-50 inline-flex justify-center items-center gap-1"
+              class="mt-4 bg-green-400/10 hover:bg-green-400/20 font-bold py-2 px-4 rounded disabled:cursor-not-allowed disabled:opacity-50 inline-flex justify-center items-center gap-1"
               @click.prevent="confirm"
             >
               <Loader2 v-if="props.loading" class="animate-spin" :size="16" />
