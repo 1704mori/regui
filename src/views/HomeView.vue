@@ -137,28 +137,28 @@ watchEffect(() => {
         <h2 class="font-bold text-xl">Details for {{ clickedRow.name }}</h2>
         <div class="flex flex-col gap-2">
           <div class="grid grid-cols-[12rem_1fr] gap-2">
-            <span class="font-medium text uppercase">Tag</span>
-            <span class="g-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 rounded-md p-1 text-center w-full">
+            <span class="font-medium uppercase">Tag</span>
+            <span class="bg-neutral-200 dark:bg-neutral-950 border border-neutral-300 dark:border-neutral-800 rounded-md p-1 text-center w-full">
               alo
             </span>
           </div>
           <div class="grid grid-cols-[12rem_1fr] gap-2">
-            <span class="font-medium text uppercase">Digest</span>
-            <span class="bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 rounded-md p-1 text-center w-full">
+            <span class="font-medium uppercase">Digest</span>
+            <span class="bg-neutral-200 dark:bg-neutral-950 border border-neutral-300 dark:border-neutral-800 rounded-md p-1 text-center w-full">
               as18249wyeu98fsdndf12894usrejkghsdfk1
             </span>
           </div>
           <div class="grid grid-cols-[12rem_1fr] gap-2">
-            <span class="font-medium text uppercase">Size</span>
-            <span class="bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 rounded-md p-1 text-center w-full">
+            <span class="font-medium uppercase">Size</span>
+            <span class="bg-neutral-200 dark:bg-neutral-950 border border-neutral-300 dark:border-neutral-800 rounded-md p-1 text-center w-full">
               alo
             </span>
           </div>
           <div class="grid grid-cols-[12rem_1fr] gap-2">
-            <span class="font-medium text uppercase"
+            <span class="font-medium uppercase"
               >Pushed At</span
             >
-            <span class="bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 rounded-md p-1 text-center w-full">
+            <span class="bg-neutral-200 dark:bg-neutral-950 border border-neutral-300 dark:border-neutral-800 rounded-md p-1 text-center w-full">
               dslfkj12
             </span>
           </div>
