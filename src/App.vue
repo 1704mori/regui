@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Toaster } from "vue-sonner";
 import { Droplet } from "lucide-vue-next";
-import Home from "./views/HomeView.vue";
 import { useDark, useToggle } from "@vueuse/core";
+import { RouterView } from "vue-router";
 
 const isDark = useDark({
   selector: "html",
@@ -20,5 +20,8 @@ const toggleDark = useToggle(isDark);
       <Droplet />
     </button>
   </div>
-  <Home />
+
+  <main class="w-full">
+    <RouterView />
+  </main>
 </template>
