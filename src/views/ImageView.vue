@@ -11,7 +11,7 @@ import {
 
 import Table from "@/components/Table.vue";
 import Dialog from "@/components/Dialog.vue";
-import { ArrowUpRightFromSquare, Calendar, Computer, Container, Eye, Key, Tag, Trash, Weight } from "lucide-vue-next";
+import { Loader2 } from "lucide-vue-next";
 import { useRoute, useRouter } from "vue-router";
 import { convertBytes } from "@/lib/utils";
 
@@ -64,6 +64,8 @@ const modal = ref<InstanceType<typeof Dialog>>();
 const showModal = () => modal.value?.show();
 const clickedRow = ref<{ name: string; tags: string[] }>({} as any);
 
+const loading = ref(true);
+
 const tagsFetcher = async (repository: string): Promise<Tags> =>
   await fetch(`/v2/${encodeURIComponent(repository)}/tags/list`, {
     credentials: "include",
@@ -73,7 +75,7 @@ const tagsFetcher = async (repository: string): Promise<Tags> =>
     }),
   }).then((response) => response.json());
 
-const fetchTagSize = async(digest: string): Promise<number> =>
+const fetchTagSize = async (digest: string): Promise<number> =>
   await fetch(`/v2/${encodeURIComponent(route.params.image as string)}/blobs/${digest}`, {
     credentials: "include",
     headers: new Headers({
@@ -94,20 +96,20 @@ const fetchImage = async (repository: string, tag: string): Promise<ImageTag> =>
     digest: response.headers.get("Docker-Content-Digest")
   }));
 
-const { isLoading, isError, isFetching, error, data, refetch, suspense } =
+  
+  const { isLoading, isError, isFetching, error, data, refetch, suspense } =
   useQuery({
-    queryKey: ["repositories", route.params.image as string],
+    queryKey: ["image", route.params.image as string],
     queryFn: (key) => tagsFetcher(route.params.image as string),
     select: async (data) => {
-      console.log(route.params)
       for (const tag of data.tags) {
         const image = await fetchImage(route.params.image as string, tag)
         let sumSize = 0
-
-        for (const {blobSum} of image.fsLayers) {
+        
+        for (const { blobSum } of image.fsLayers) {
           sumSize += await fetchTagSize(blobSum);
         }
-
+        
         images.value.push({
           size: convertBytes(sumSize),
           digest: image.digest,
@@ -116,14 +118,13 @@ const { isLoading, isError, isFetching, error, data, refetch, suspense } =
           pushed_at: JSON.parse(image.history[0].v1Compatibility).created,
         })
       }
-    }
+      loading.value = false
+    },
   });
-
+  
 const handleRowClick = (row: any) => {
   console.log(row)
 };
-
-suspense();
 
 const columns = ref([
   { key: "size", label: "Comp. Size" },
@@ -155,18 +156,15 @@ watchEffect(() => {
     <h2 class="text-lg font-medium">
       List of tags for <i>{{ route.params.image }}</i>
     </h2>
-    <Suspense>
-      <template #default>
-        <div v-if="isError">An error has occurred: {{ error }}</div>
-        <div v-else-if="images">
-          <Table :columns="columns" :data="images" :rows-per-page="999" :total="images.length"
-            :row-click="handleRowClick" />
-        </div>
-        <div v-else>Nothing to see here...</div>
-      </template>
-      <template #fallback>
-        <div>Loading...</div>
-      </template>
-    </Suspense>
+    <div class="flex items-center gap-2 bg-neutral-200 dark:bg-neutral-950 border border-neutral-300 dark:border-neutral-900 p-1 rounded-md" v-if="loading">
+      <Loader2 class="animate-spin" />
+      <span class="font-medim text-xs">
+        Fetching images
+      </span>
+    </div>
+    <div v-else-if="images && !loading && !isError">
+      <Table :columns="columns" :data="images" :rows-per-page="999" :total="images.length" :row-click="handleRowClick" />
+    </div>
+    <div v-else>An error has occurred: {{ error }}</div>
   </div>
 </template>
