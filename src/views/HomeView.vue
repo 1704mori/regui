@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineComponent, h, ref, watch, watchEffect, type VNode } from "vue";
+import { defineComponent, h, ref, watch, watchEffect, type VNode, inject } from "vue";
 import { useQuery } from "@tanstack/vue-query";
 import {
   Tooltip,
@@ -10,23 +10,17 @@ import {
 } from "@/components/Tooltip";
 
 import Table from "@/components/Table.vue";
-import Dialog from "@/components/Dialog.vue";
+import ViewImageTag from "@/components/Modals/ViewImageTag.vue";
 import { ArrowUpRightFromSquare, Container, Eye, Tag, Trash } from "lucide-vue-next";
 import { useRouter } from "vue-router";
+import { tagsFetcher } from "@/lib/api";
+import { useEventBus } from "@vueuse/core";
 
 type Repositories = {
   repositories: string[];
 };
 
-type Tags = {
-  name: string;
-  tags: string[];
-};
-
 const router = useRouter();
-
-const modal = ref<InstanceType<typeof Dialog>>();
-const showModal = () => modal.value?.show();
 const clickedRow = ref<{ name: string; tags: string[] }>({} as any);
 
 const PAGE_SIZE = 15;
@@ -40,15 +34,6 @@ const repositoriesFetcher = async (page: number): Promise<Repositories> =>
     headers: new Headers({
       Authorization: "Basic " + btoa(`overlord:itadakimasu`),
       "Content-Type": "application/json", // Adjust the content type as needed
-    }),
-  }).then((response) => response.json());
-
-const tagsFetcher = async (repository: string): Promise<Tags> =>
-  await fetch(`/v2/${repository}/tags/list`, {
-    credentials: "include",
-    headers: new Headers({
-      Authorization: "Basic " + btoa(`overlord:itadakimasu`),
-      "Content-Type": "application/json",
     }),
   }).then((response) => response.json());
 
@@ -74,10 +59,12 @@ const handlePageClick = (page: number) => {
   refetch();
 };
 
+const event = useEventBus("modal");
+
 const handleRowClick = (row: any) => {
   if (row.tags.length <= 1) {
     clickedRow.value = row;
-    showModal();
+    event.emit('openModal');
     return
   }
 
@@ -121,69 +108,29 @@ watchEffect(() => {
 </script>
 
 <template>
- <div class="flex flex-col gap-2">
+  <div class="flex flex-col gap-2">
     <h2 class="text-lg font-medium">
       Images list
     </h2>
-  <Dialog
-    classes="w-[36rem]"
-    ref="modal"
-    hide-confirm
-    show-cancel
-    :onConfirm="console.log"
-  >
-    <template #default>
-      <div class="flex flex-col gap-4">
-        <h2 class="font-bold text-xl">Details for {{ clickedRow.name }}</h2>
-        <div class="flex flex-col gap-2">
-          <div class="grid grid-cols-[12rem_1fr] gap-2">
-            <span class="font-medium uppercase">Tag</span>
-            <span class="bg-neutral-200 dark:bg-neutral-950 border border-neutral-300 dark:border-neutral-800 rounded-md p-1 text-center w-full">
-              alo
-            </span>
-          </div>
-          <div class="grid grid-cols-[12rem_1fr] gap-2">
-            <span class="font-medium uppercase">Digest</span>
-            <span class="bg-neutral-200 dark:bg-neutral-950 border border-neutral-300 dark:border-neutral-800 rounded-md p-1 text-center w-full">
-              as18249wyeu98fsdndf12894usrejkghsdfk1
-            </span>
-          </div>
-          <div class="grid grid-cols-[12rem_1fr] gap-2">
-            <span class="font-medium uppercase">Size</span>
-            <span class="bg-neutral-200 dark:bg-neutral-950 border border-neutral-300 dark:border-neutral-800 rounded-md p-1 text-center w-full">
-              alo
-            </span>
-          </div>
-          <div class="grid grid-cols-[12rem_1fr] gap-2">
-            <span class="font-medium uppercase"
-              >Pushed At</span
-            >
-            <span class="bg-neutral-200 dark:bg-neutral-950 border border-neutral-300 dark:border-neutral-800 rounded-md p-1 text-center w-full">
-              dslfkj12
-            </span>
-          </div>
+    <ViewImageTag :tag="clickedRow" />
+    <Suspense>
+      <template #default>
+        <div v-if="isError">An error has occurred: {{ error }}</div>
+        <div v-else-if="repositoriesData">
+          <Table
+            :columns="columns"
+            :data="repositoriesData"
+            :rows-per-page="PAGE_SIZE"
+            :total="repositoriesData.length"
+            :page-click="handlePageClick"
+            :row-click="handleRowClick"
+          />
         </div>
-      </div>
-    </template>
-  </Dialog>
-  <Suspense>
-    <template #default>
-      <div v-if="isError">An error has occurred: {{ error }}</div>
-      <div v-else-if="repositoriesData">
-        <Table
-          :columns="columns"
-          :data="repositoriesData"
-          :rows-per-page="PAGE_SIZE"
-          :total="repositoriesData.length"
-          :page-click="handlePageClick"
-          :row-click="handleRowClick"
-        />
-      </div>
-      <div v-else>Nothing to see here...</div>
-    </template>
-    <template #fallback>
-      <div>Loading...</div>
-    </template>
-  </Suspense>
-</div>
+        <div v-else>Nothing to see here...</div>
+      </template>
+      <template #fallback>
+        <div>Loading...</div>
+      </template>
+    </Suspense>
+  </div>
 </template>
