@@ -64,7 +64,10 @@ const event = useEventBus("modal");
 const handleRowClick = (row: any) => {
   if (row.tags.length <= 1) {
     clickedRow.value = row;
-    event.emit('openModal');
+    event.emit({
+      type: "openModal",
+      payload: row,
+    });
     return
   }
 
@@ -112,7 +115,7 @@ watchEffect(() => {
     <h2 class="text-lg font-medium">
       Images list
     </h2>
-    <ViewImageTag :tag="clickedRow" />
+    <ViewImageTag />
     <Suspense>
       <template #default>
         <div v-if="isError">An error has occurred: {{ error }}</div>
