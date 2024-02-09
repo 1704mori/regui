@@ -21,10 +21,16 @@
           </div>
           <div class="grid grid-cols-[12rem_1fr] gap-2">
             <span class="font-medium uppercase">Digest</span>
-            <span
+            <button
+              type="button"
+              class="truncate"
+              @click="clipboard.copy(tag?.digest as string); toast.info('Digest copied to clipboard')"
+            >
+              <span
               class="bg-neutral-200 dark:bg-neutral-950 border border-neutral-300 dark:border-neutral-800 rounded-md p-1 text-center w-full truncate">
               {{ tag?.digest }}
             </span>
+            </button>
           </div>
           <div class="grid grid-cols-[12rem_1fr] gap-2">
             <span class="font-medium uppercase">Size</span>
@@ -52,10 +58,13 @@ import Dialog from "../Dialog.vue";
 import { useQuery } from "@tanstack/vue-query";
 import { tagsFetcher, fetchImage, fetchTagSize } from "@/lib/api";
 import { convertBytes } from "@/lib/utils";
-import { useEventBus } from "@vueuse/core";
+import { useEventBus, useClipboard } from "@vueuse/core";
 import { Loader2 } from "lucide-vue-next";
+import { toast } from "vue-sonner";
 
 const event = useEventBus("modal");
+const clipboard = useClipboard();
+
 const modal = ref<InstanceType<typeof Dialog>>();
 
 const tag = ref<{
