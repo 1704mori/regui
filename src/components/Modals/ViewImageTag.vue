@@ -6,7 +6,7 @@
         <Loader2 class="animate-spin" />
       </div>
     </template>
-    
+
     <!-- Content -->
     <template v-else>
       <div class="flex flex-col gap-4">
@@ -73,7 +73,7 @@ event.on((event: any) => {
   console.log(event)
   if (event.type == "openModal") {
     modal.value?.show();
-    
+
     if (event.payload.tags) {
       loading.value = !!event.payload.name;
       tag.value.name = event.payload.name;
@@ -105,7 +105,8 @@ const { isLoading, isError, isFetching, error, data, refetch, suspense } =
         digest: data.digest,
         tag: data.tag,
         arch: data.architecture,
-        pushed_at: JSON.parse(data.history[0].v1Compatibility).created,
+        pushed_at: new Date(JSON.parse(data.history[0].v1Compatibility).created)
+          .toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "short", day: "numeric" }),
       }
       loading.value = false
     },

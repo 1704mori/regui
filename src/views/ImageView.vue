@@ -86,7 +86,8 @@ watchEffect(() => {
     digest: image.digest,
     tag: image.tag,
     arch: image.arch,
-    pushed_at: image.pushed_at,
+    pushed_at: new Date(image.pushed_at as string)
+      .toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "short", day: "numeric" }),
   }));
 });
 </script>
