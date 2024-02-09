@@ -91,13 +91,13 @@
           >
             <p class="text-sm font-semibold">{{ column.label }}</p>
             <p
-              v-if="typeof item[column.key] == 'string'"
+              v-if="typeof item[column.key] == 'string' && column.key !== 'actions'"
               class="font-medium"
               v-html="item[column.key]"
             />
             <component v-else :is="item[column.key]" />
           </div>
-          <component v-else>
+          <component v-else-if="column.key !== 'actions'">
             <p
               v-if="typeof item[column.key] == 'string'"
               class="font-medium"
