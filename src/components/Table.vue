@@ -95,7 +95,7 @@
               class="font-medium"
               v-html="item[column.key]"
             />
-            <component v-else :is="item[column.key]" />
+            <component v-else-if="column.key !== 'actions'" :is="item[column.key]" />
           </div>
           <component v-else-if="column.key !== 'actions'">
             <p

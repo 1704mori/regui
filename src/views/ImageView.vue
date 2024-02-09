@@ -3,11 +3,20 @@ import { defineComponent, h, ref, watchEffect, onMounted, reactive, type VNode }
 import { useQuery } from "@tanstack/vue-query";
 import Table from "@/components/Table.vue";
 import ViewImageTag from "@/components/Modals/ViewImageTag.vue";
-import { Loader2 } from "lucide-vue-next";
+import { Loader2, Trash } from "lucide-vue-next";
 import { useRoute } from "vue-router";
 import { convertBytes } from "@/lib/utils";
-import { fetchImage, fetchTagSize, tagsFetcher } from "@/lib/api";
+import { deleteImageTag, fetchImage, fetchTagSize, tagsFetcher } from "@/lib/api";
 import { useEventBus } from "@vueuse/core";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+  // @ts-ignore
+} from "@/components/Tooltip";
+import { toast } from "vue-sonner";
+
 
 const route = useRoute();
 const event = useEventBus("modal");
@@ -77,6 +86,7 @@ const columns = [
   { key: "tag", label: "Tag" },
   { key: "arch", label: "Arch" },
   { key: "pushed_at", label: "Pushed At" },
+  { key: "actions", label: "Actions" },
 ];
 
 watchEffect(() => {
@@ -88,6 +98,33 @@ watchEffect(() => {
     arch: image.arch,
     pushed_at: new Date(image.pushed_at as string)
       .toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "short", day: "numeric" }),
+    // actions: () => {
+    //   return h("div", { class: "flex justify-center items-center gap-2 " }, [
+    //     h(TooltipProvider, [
+    //       h(Tooltip, [
+    //         h(TooltipTrigger, { asChild: true }, [
+    //           h(
+    //             "button",
+    //             {
+    //               onClick: async () => {
+    //                 try {
+    //                   await deleteImageTag(route.params.image as string, image.tag as string);
+    //                   await refetch();
+    //                   toast.success(`Tag ${image.tag} for image ${route.params.image} has been deleted`);
+    //                 } catch (error: any) {
+    //                   console.error(error);
+    //                   toast.error(error?.response?.data?.errors?.[0].message ?? "An error occurred while deleting the tag");
+    //                 }
+    //               },
+    //             },
+    //             [h(Trash, { size: 20 })]
+    //           ),
+    //         ]),
+    //         h(TooltipContent, ["Delete"]),
+    //       ]),
+    //     ])
+    //   ]);
+    // },
   }));
 });
 </script>
@@ -104,7 +141,7 @@ watchEffect(() => {
       <span>Fetching images</span>
     </div>
     <Table v-else-if="state.images.length && !state.loading" :columns="columns" :data="state.images"
-      :row-click="handleRowClick" />
+      :row-click="handleRowClick" show-column-name />
     <div v-else>An error has occurred: {{ state.error }}</div>
   </div>
 </template>

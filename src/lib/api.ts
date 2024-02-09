@@ -61,3 +61,13 @@ export const fetchImage = async (repository: string, tag: string): Promise<Image
         ...await response.json(),
         digest: response.headers.get("Docker-Content-Digest")
     }));
+
+export const deleteImageTag = async (repository: string, tagOrDigest: string): Promise<void> =>
+    await fetch(`/v2/${encodeURIComponent(repository)}/manifests/${tagOrDigest.startsWith("sha256:") ? tagOrDigest : encodeURIComponent(tagOrDigest)}`, {
+        credentials: "include",
+        headers: new Headers({
+            Authorization: "Basic " + btoa(`overlord:itadakimasu`),
+            "Content-Type": "application/json",
+        }),
+        method: "DELETE"
+    }).then(() => { });
