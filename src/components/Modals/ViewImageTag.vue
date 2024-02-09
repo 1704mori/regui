@@ -1,8 +1,16 @@
 <template>
-  <Dialog classes="w-[36rem]" ref="modal" hide-confirm show-cancel>
-    <template #default>
+  <Dialog classes="w-[36rem]" ref="modal" hide-confirm show-cancel cancel-text="Close">
+    <!-- Loading Indicator -->
+    <template v-if="loading">
+      <div class="flex justify-center items-center">
+        <Loader2 class="animate-spin" />
+      </div>
+    </template>
+    
+    <!-- Content -->
+    <template v-else>
       <div class="flex flex-col gap-4">
-        <h2 class="font-bold text-xl">Details for {{ props.tag?.name }}</h2>
+        <h2 class="font-bold text-xl">Details for {{ tag?.name }}</h2>
         <div class="flex flex-col gap-2">
           <div class="grid grid-cols-[12rem_1fr] gap-2">
             <span class="font-medium uppercase">Tag</span>
@@ -45,43 +53,54 @@ import { useQuery } from "@tanstack/vue-query";
 import { tagsFetcher, fetchImage, fetchTagSize } from "@/lib/api";
 import { convertBytes } from "@/lib/utils";
 import { useEventBus } from "@vueuse/core";
-
-const props = defineProps({
-  tag: Object,
-});
+import { Loader2 } from "lucide-vue-next";
 
 const event = useEventBus("modal");
 const modal = ref<InstanceType<typeof Dialog>>();
 
-event.on((data: any) => {
-  if (data == "openModal") {
-    console.log(modal)
-    modal.value?.show();
-  }
-});
-
 const tag = ref<{
+  name?: string;
+  tags?: string[];
   size: string | VNode;
   digest: string | VNode;
   tag: string | VNode;
   arch: string | VNode;
   pushed_at: string | VNode
-}>()
-const loading = ref(true);
+}>({} as any);
+const loading = ref(false);
+
+event.on((event: any) => {
+  console.log(event)
+  if (event.type == "openModal") {
+    modal.value?.show();
+    
+    if (event.payload.tags) {
+      loading.value = !!event.payload.name;
+      tag.value.name = event.payload.name;
+      tag.value.tags = event.payload.tags;
+      refetch();
+      return
+    }
+
+    tag.value = event.payload;
+  }
+});
 
 const { isLoading, isError, isFetching, error, data, refetch, suspense } =
   useQuery({
-    enabled: !props.tag?.tag,
-    queryKey: ["image", props.tag?.name],
-    queryFn: (key) => fetchImage(props.tag?.name as string, props.tag?.tags[0]),
+    enabled: false,
+    queryKey: ["image", tag.value?.name],
+    queryFn: (key) => fetchImage(tag.value?.name as string, tag.value?.tags![0] as string),
     select: async (data) => {
+      loading.value = true
       let sumSize = 0
 
       for (const { blobSum } of data.fsLayers) {
-        sumSize += await fetchTagSize(props.tag?.name as string, blobSum);
+        sumSize += await fetchTagSize(tag.value?.name as string, blobSum);
       }
 
       tag.value = {
+        name: tag.value.name,
         size: convertBytes(sumSize),
         digest: data.digest,
         tag: data.tag,
