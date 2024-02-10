@@ -18,6 +18,7 @@ docker run -d \
     -p 9001:9001 \
     -e LISTEN_PORT=9001 \
     -e REGISTRY_PORT=5000 \
+    -e REGISTRY_CREDENTIALS=user:pass
     1704mori/regui:latest
 ```
 
