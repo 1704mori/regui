@@ -14,13 +14,18 @@ To run the application, use the following `docker run` command, specifying the `
 
 ```bash
 docker run -d \
-    --name registry_ui \
-    -p 9001:9001 \
-    -e LISTEN_PORT=9001 \
-    -e REGISTRY_PORT=5000 \
-    -e REGISTRY_CREDENTIALS=user:pass
+    --name regui \
+    -p 9002:9002 \
+    -e LISTEN_PORT=9002 \
+    -e REGISTRY_PORT=9001 \
+    -e REGISTRY_CREDENTIALS=user:pass \
+    --network my_network \
     1704mori/regui:latest
 ```
+
+## Notes
+The regui's container must be in the same network as the Docker Registry's container in order to access the Docker Registry's API.
+Also, the `REGISTRY_CREDENTIALS` environment variable is optional and should be used if the Docker Registry requires authentication.
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
