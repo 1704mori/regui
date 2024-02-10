@@ -1,26 +1,13 @@
 <script setup lang="ts">
-import { defineComponent, h, ref, watch, watchEffect, type VNode, inject } from "vue";
+import { h, ref, watchEffect, type VNode } from "vue";
 import { useQuery } from "@tanstack/vue-query";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-  // @ts-ignore
-} from "@/components/Tooltip";
-
 import Table from "@/components/Table.vue";
 import ViewImageTag from "@/components/Modals/ViewImageTag.vue";
-import { ArrowUpRightFromSquare, Container, Eye, Tag, Trash } from "lucide-vue-next";
+import { ArrowUpRightFromSquare, Container, Eye, Tag } from "lucide-vue-next";
 import { useRouter } from "vue-router";
-import { deleteImageTag, fetchImage, tagsFetcher } from "@/lib/api";
+import { repositoriesFetcher, tagsFetcher } from "@/lib/api";
 import { useClipboard, useEventBus } from "@vueuse/core";
 import { toast } from "vue-sonner";
-
-
-type Repositories = {
-  repositories: string[];
-};
 
 const clipboard = useClipboard();
 const router = useRouter();
@@ -29,19 +16,9 @@ const event = useEventBus("modal");
 const copied = ref(false);
 const clickedRow = ref<{ name: string; tags: string[] }>({} as any);
 
-const PAGE_SIZE = 15;
 const repositoriesData = ref<
   null | { name: string | VNode; tags: string[] | VNode; actions?: any }[]
 >(null); // Initialize as null
-
-const repositoriesFetcher = async (page: number): Promise<Repositories> =>
-  await fetch(`/v2/_catalog?n=${PAGE_SIZE}&last=${page * PAGE_SIZE}`, {
-    credentials: "include",
-    headers: new Headers({
-      Authorization: "Basic " + btoa(`overlord:itadakimasu`),
-      "Content-Type": "application/json", // Adjust the content type as needed
-    }),
-  }).then((response) => response.json());
 
 const currentPage = ref(0);
 
@@ -64,7 +41,6 @@ const handlePageClick = (page: number) => {
   currentPage.value = page;
   refetch();
 };
-
 
 const handleRowClick = (row: any) => {
   if (copied.value) return;
@@ -173,7 +149,7 @@ watchEffect(() => {
       <template #default>
         <div v-if="isError">An error has occurred: {{ error }}</div>
         <div v-else-if="repositoriesData">
-          <Table :columns="columns" :data="repositoriesData" :rows-per-page="PAGE_SIZE" :total="repositoriesData.length"
+          <Table :columns="columns" :data="repositoriesData" :rows-per-page="15" :total="repositoriesData.length"
             :page-click="handlePageClick" :row-click="handleRowClick" />
         </div>
         <div v-else>Nothing to see here...</div>

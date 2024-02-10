@@ -26,17 +26,22 @@ type ImageTag = {
     }>
 }
 
-
 type Tags = {
     name: string;
     tags: string[];
 };
 
+type Repositories = {
+    repositories: string[];
+};
+
+const REGISTRY_CREDENTIALS = import.meta.env.REGISTRY_CREDENTIALS || "__REGISTRY_CREDENTIALS__";
+
 export const tagsFetcher = async (repository: string): Promise<Tags> =>
     await fetch(`/v2/${encodeURIComponent(repository)}/tags/list`, {
         credentials: "include",
         headers: new Headers({
-            Authorization: "Basic " + btoa(`overlord:itadakimasu`),
+            Authorization: "Basic " + btoa(REGISTRY_CREDENTIALS),
             "Content-Type": "application/json",
         }),
     }).then((response) => response.json());
@@ -45,7 +50,7 @@ export const fetchTagSize = async (image: string, digest: string): Promise<numbe
     await fetch(`/v2/${encodeURIComponent(image)}/blobs/${digest}`, {
         credentials: "include",
         headers: new Headers({
-            Authorization: "Basic " + btoa(`overlord:itadakimasu`),
+            Authorization: "Basic " + btoa(REGISTRY_CREDENTIALS),
             "Content-Type": "application/json",
         }),
     }).then((response) => parseInt(response.headers.get("Content-Length") as string));
@@ -54,7 +59,7 @@ export const fetchImage = async (repository: string, tag: string): Promise<Image
     await fetch(`/v2/${encodeURIComponent(repository)}/manifests/${encodeURIComponent(tag)}`, {
         credentials: "include",
         headers: new Headers({
-            Authorization: "Basic " + btoa(`overlord:itadakimasu`),
+            Authorization: "Basic " + btoa(REGISTRY_CREDENTIALS),
             "Content-Type": "application/json",
         }),
     }).then(async (response) => ({
@@ -66,8 +71,17 @@ export const deleteImageTag = async (repository: string, tagOrDigest: string): P
     await fetch(`/v2/${encodeURIComponent(repository)}/manifests/${tagOrDigest.startsWith("sha256:") ? tagOrDigest : encodeURIComponent(tagOrDigest)}`, {
         credentials: "include",
         headers: new Headers({
-            Authorization: "Basic " + btoa(`overlord:itadakimasu`),
+            Authorization: "Basic " + btoa(REGISTRY_CREDENTIALS),
             "Content-Type": "application/json",
         }),
         method: "DELETE"
     }).then(() => { });
+
+export const repositoriesFetcher = async (page: number): Promise<Repositories> =>
+    await fetch(`/v2/_catalog?n=${15}&last=${page * 15}`, {
+        credentials: "include",
+        headers: new Headers({
+            Authorization: "Basic " + btoa(`overlord:itadakimasu`),
+            "Content-Type": "application/json", // Adjust the content type as needed
+        }),
+    }).then((response) => response.json());
