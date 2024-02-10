@@ -125,7 +125,7 @@ watchEffect(() => {
             },
             String((repository.tags as string[]).length),
           ),
-          // h(Tag, { size: 16 }),
+          h(Tag, { size: 16 }),
           // (repository.tags as string[]).length == 1 ? h(TooltipProvider, [
           //   h(Tooltip, [
           //     h(TooltipTrigger, { asChild: true }, [
