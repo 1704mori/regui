@@ -81,7 +81,7 @@ export const repositoriesFetcher = async (page: number): Promise<Repositories> =
     await fetch(`/v2/_catalog?n=${15}&last=${page * 15}`, {
         credentials: "include",
         headers: new Headers({
-            Authorization: "Basic " + btoa(`overlord:itadakimasu`),
+            Authorization: "Basic " + btoa(REGISTRY_CREDENTIALS),
             "Content-Type": "application/json", // Adjust the content type as needed
         }),
     }).then((response) => response.json());
